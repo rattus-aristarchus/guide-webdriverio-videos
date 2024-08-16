@@ -1,1 +1,0 @@
-it("sample test", () => {});

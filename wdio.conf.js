@@ -1,3 +1,5 @@
+const { addAttachment } = require("@wdio/allure-reporter");
+
 exports.config = {
   //
   // ====================
@@ -188,8 +190,16 @@ exports.config = {
    * @param {Array.<String>} specs        List of spec file paths that are to be run
    * @param {object}         browser      instance of created browser/device session
    */
-  // before: function (capabilities, specs) {
-  // },
+  before: function (capabilities, specs) {
+    
+    global.attachVideo = async function() {
+      const videoUrl = selenoid_protocol + "://" + selenoid_hostname + ":4444/video/" + sessionId + ".mp4"
+      const html = "<html><body><video width='100%' height='100%' controls autoplay><source src='" +
+             videoUrl + "' type='video/mp4'></video></body></html>";
+      addAttachment("Video for session " + sessionId, html, "text/html");
+    };
+  
+  },
   /**
    * Runs before a WebdriverIO command gets executed.
    * @param {string} commandName hook command name
@@ -236,8 +246,8 @@ exports.config = {
     { error, result, duration, passed, retries }
   ) {
     if (!passed) {
-      await browser.takeScreenshot();
-    }
+      await attachVideo();
+    };
   },
 
   /**
